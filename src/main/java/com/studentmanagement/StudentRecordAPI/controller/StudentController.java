@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import jakarta.validation.Valid;
 
 
 
@@ -29,7 +30,7 @@ public class StudentController{
     }
 
     @PostMapping("/create")
-    public  ResponseEntity<Student> createStudent(@RequestBody Student s){
+    public  ResponseEntity<Student> createStudent(@Valid @RequestBody Student s){
         Student createdStudent=studentService.createStudent(s);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdStudent);
 
@@ -46,7 +47,7 @@ public class StudentController{
     }
 
      @GetMapping("/getall")
-    public ResponseEntity <List<Student>> getAllStudent() {
+     public ResponseEntity <List<Student>> getAllStudent() {
         List <Student> studentList =studentService.getAllStudent();
         if(studentList.isEmpty()){
             return ResponseEntity.notFound().build();
@@ -56,7 +57,7 @@ public class StudentController{
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Student> updateStudent(@PathVariable Long id, @RequestBody Student studentReq) {
+    public ResponseEntity<Student> updateStudent(@PathVariable Long id,@Valid  @RequestBody Student studentReq) {
          Student studentResp=studentService.updateStudent(id,studentReq);
 
          if(studentResp==null){
