@@ -20,8 +20,6 @@ public class Enrollment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable=false)
-    private LocalDate enrollmentAt;
     @Column(nullable = false)
     private String status;
     @ManyToOne
