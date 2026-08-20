@@ -19,11 +19,11 @@ public class StudentService {
     }
     
     public Student createStudent(Student studentReq){
-         studentReq.setCreatedAt(LocalDateTime.now());
-        studentReq.setUpdatedAt(LocalDateTime.now());
+      studentReq.setCreatedAt(LocalDateTime.now());
+      studentReq.setUpdatedAt(LocalDateTime.now());
 
-        Student studentResp=studentRepository.save(studentReq);
-        return studentResp;
+      Student studentResp=studentRepository.save(studentReq);
+      return studentResp;
     }
 
     public Student getStudent(Long id){
@@ -44,9 +44,14 @@ public class StudentService {
     public Student updateStudent(Long id,Student studentReq){
        Optional <Student> studentResp= studentRepository.findById(id);
 
-       if(studentResp.isEmpty()){
-            return null;
-       }
+       if (studentResp.isEmpty()) {
+        throw new RuntimeException("Student not found");
+      }
+      
+      if (studentRepository.existsByEmailAndIdNot(studentReq.getEmail(), id)) {
+        throw new RuntimeException("Email already exists");
+      }
+
 
        Student studentToSave=studentResp.get();
        studentToSave.setFirstName(studentReq.getFirstName());
@@ -55,7 +60,7 @@ public class StudentService {
        studentToSave.setEmail(studentReq.getEmail());
        studentToSave.setAddress(studentReq.getAddress());
 
-       return studentRepository.save(studentReq);
+       return studentRepository.save(studentToSave);
     }
 
     public Boolean deleteStudent(Long id){

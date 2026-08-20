@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import com.studentmanagement.StudentRecordAPI.entity.Student;
 import com.studentmanagement.StudentRecordAPI.service.StudentService;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
@@ -53,7 +55,7 @@ public class StudentController{
         return ResponseEntity.ok(studentList);
     }
 
-    @PutMapping("path/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Student> updateStudent(@PathVariable Long id, @RequestBody Student studentReq) {
          Student studentResp=studentService.updateStudent(id,studentReq);
 
@@ -64,7 +66,8 @@ public class StudentController{
         return ResponseEntity.ok(studentResp);
     }
     
-    public ResponseEntity <String> deleteStudent(@RequestParam Long id){
+    @DeleteMapping("/{id}")
+    public ResponseEntity <String> deleteStudent(@PathVariable Long id){
         Boolean isDeleted=studentService.deleteStudent(id);
         if(!isDeleted){
             return ResponseEntity.notFound().build();
