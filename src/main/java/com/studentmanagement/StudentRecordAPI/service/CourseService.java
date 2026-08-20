@@ -1,10 +1,14 @@
 package com.studentmanagement.StudentRecordAPI.service;
 
 import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import com.studentmanagement.StudentRecordAPI.entity.Course;
 import com.studentmanagement.StudentRecordAPI.repository.CourseRepository;
 
+@Service
 public class CourseService {
 
      private  CourseRepository courseRepository;
@@ -46,4 +50,13 @@ public class CourseService {
         return courseRepository.save(courseToSave);
     }
 
+
+    public void deleteCourse(Long id) {
+
+        getCourse(id);
+
+        courseRepository.deleteById(id);
+    }
 }
+
+

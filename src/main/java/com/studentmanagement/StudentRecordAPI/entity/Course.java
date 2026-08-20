@@ -15,7 +15,7 @@ public class Course {
     @Column(nullable = false , unique = true )
     private String courseName;
     @Column(nullable = false,unique = true)
-    private Integer courseCode;
+    private String courseCode;
     @Column(nullable = false)
     private String courseDescription;
     @Column(nullable = true) 
@@ -37,11 +37,11 @@ public class Course {
         return courseDescription;
     }
 
-    public int getCourseCode(){
+    public String getCourseCode(){
         return courseCode;
     }
 
-    public void setCourseCode(Integer courseCode){
+    public void setCourseCode(String courseCode){
         this.courseCode = courseCode;
     }
 
