@@ -5,6 +5,9 @@ import org.springframework.stereotype.Service;
 import com.studentmanagement.StudentRecordAPI.entity.Course;
 import com.studentmanagement.StudentRecordAPI.entity.Enrollment;
 import com.studentmanagement.StudentRecordAPI.entity.Student;
+import com.studentmanagement.StudentRecordAPI.exception.CourseNotFoundException;
+import com.studentmanagement.StudentRecordAPI.exception.EnrollmentNotFoundException;
+import com.studentmanagement.StudentRecordAPI.exception.StudentNotFoundException;
 import com.studentmanagement.StudentRecordAPI.repository.CourseRepository;
 import com.studentmanagement.StudentRecordAPI.repository.StudentRepository;
 import com.studentmanagement.StudentRecordAPI.repository.EnrollmentRepository;
@@ -52,7 +55,7 @@ public class EnrollmentService {
     public Enrollment getEnrollmentById(Long id) {
 
         return enrollmentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Enrollment not found"));
+                .orElseThrow(() -> new EnrollmentNotFoundException("Enrollment not found"+id));
     }
 
     public Enrollment updateEnrollment(
@@ -64,10 +67,10 @@ public class EnrollmentService {
         Enrollment enrollment = getEnrollmentById(id);
 
         Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
+                .orElseThrow(() -> new StudentNotFoundException("Student not found" + studentId));
 
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new RuntimeException("Course not found"));
+                .orElseThrow(() -> new CourseNotFoundException("Course not found" +courseId));
 
         enrollment.setStudent(student);
         enrollment.setCourse(course);

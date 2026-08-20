@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import com.studentmanagement.StudentRecordAPI.entity.Course;
+import com.studentmanagement.StudentRecordAPI.exception.CourseNotFoundException;
 import com.studentmanagement.StudentRecordAPI.repository.CourseRepository;
 
 @Service
@@ -38,7 +39,7 @@ public class CourseService {
     public Course updateCourse(Long id, Course courseReq ){
         Optional <Course> courseResp=courseRepository.findById(id);
         if(courseResp.isEmpty()){
-            throw new RuntimeException("Course not found");
+            throw new CourseNotFoundException("Course not found");
         }
 
         Course courseToSave=courseResp.get();

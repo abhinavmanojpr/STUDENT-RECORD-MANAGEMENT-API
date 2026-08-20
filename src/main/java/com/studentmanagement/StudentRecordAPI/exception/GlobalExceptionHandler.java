@@ -35,4 +35,68 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(StudentNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleStudentNotFound(
+            StudentNotFoundException exception) {
+
+        ErrorResponse response = new ErrorResponse(
+            404,
+            exception.getMessage(),
+            null
+        );
+
+        return new ResponseEntity<>(
+            response,
+            HttpStatus.NOT_FOUND
+        );
+    }
+
+    @ExceptionHandler(CourseNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleCourseNotFound(
+            CourseNotFoundException exception) {
+
+        ErrorResponse response = new ErrorResponse(
+            404,
+            exception.getMessage(),
+            null
+        );
+
+        return new ResponseEntity<>(
+            response,
+            HttpStatus.NOT_FOUND
+        );
+    }
+
+    @ExceptionHandler(EnrollmentNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEnrollmentNotFound(
+            EnrollmentNotFoundException exception) {
+
+        ErrorResponse response = new ErrorResponse(
+            404,
+            exception.getMessage(),
+            null
+        );
+
+        return new ResponseEntity<>(
+            response,
+            HttpStatus.NOT_FOUND
+        );
+    }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleEmailAlResponseEntity(
+        EmailAlreadyExistsException exception){
+
+            ErrorResponse response =new ErrorResponse(
+                409,
+                exception.getMessage(),
+                null
+            );
+
+            return new ResponseEntity<>(
+                response,
+                HttpStatus.CONFLICT
+            );
+        }
 }

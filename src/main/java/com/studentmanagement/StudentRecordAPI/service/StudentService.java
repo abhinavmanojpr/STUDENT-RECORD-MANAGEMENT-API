@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.studentmanagement.StudentRecordAPI.entity.Student;
+import com.studentmanagement.StudentRecordAPI.exception.EmailAlreadyExistsException;
+import com.studentmanagement.StudentRecordAPI.exception.StudentNotFoundException;
 import com.studentmanagement.StudentRecordAPI.repository.StudentRepository;
 
 
@@ -45,11 +47,11 @@ public class StudentService {
        Optional <Student> studentResp= studentRepository.findById(id);
 
        if (studentResp.isEmpty()) {
-        throw new RuntimeException("Student not found");
+        throw new StudentNotFoundException("Student not found"+ id);
       }
       
       if (studentRepository.existsByEmailAndIdNot(studentReq.getEmail(), id)) {
-        throw new RuntimeException("Email already exists");
+        throw new EmailAlreadyExistsException("Email already exists");
       }
 
 
