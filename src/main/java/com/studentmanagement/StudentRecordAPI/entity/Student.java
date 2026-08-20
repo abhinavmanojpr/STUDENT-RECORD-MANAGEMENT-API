@@ -10,11 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Pattern;
+
 
 @Entity
 @Table(name="student")
@@ -25,28 +21,20 @@ public class Student {
     private Long id;
 
     @Column(nullable = false)
-    @NotBlank(message="Firstname is Required")
     private String firstName;
 
     @Column(nullable = false)
-    @NotBlank(message="Lastname is Required")
     private String lastName;
 
-    @Min(value=0 , message = "Age cannot be negative")
-    private int age;
+    private Integer age;
     
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email must be valid")
     @Column(unique = true)
     private String email;
 
-    @Pattern(
-    regexp = "^[0-9]{10}$",
-    message = "Phone number must contain exactly 10 digits")
     private String phone;
-    @NotBlank(message ="Address is required")
+   
     private String address;
-    @NotNull(message="Date of birth is required")
+  
     private LocalDate dateOfBirth;
     private LocalDateTime  createdAt;
     private LocalDateTime updatedAt;
@@ -72,11 +60,11 @@ public class Student {
         this.lastName=lastName;
     }
 
-    public int getAge(){
+    public Integer getAge(){
         return age;
     }
 
-     public void setAge(int age){
+     public void setAge(Integer age){
         this.age=age;
     }
 

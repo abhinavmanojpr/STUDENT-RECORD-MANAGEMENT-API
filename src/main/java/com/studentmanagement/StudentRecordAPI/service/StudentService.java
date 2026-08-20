@@ -1,76 +1,148 @@
 package com.studentmanagement.StudentRecordAPI.service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.stereotype.Service;
 
+import com.studentmanagement.StudentRecordAPI.dto.request.StudentRequest;
+import com.studentmanagement.StudentRecordAPI.dto.response.StudentResponse;
 import com.studentmanagement.StudentRecordAPI.entity.Student;
 import com.studentmanagement.StudentRecordAPI.exception.EmailAlreadyExistsException;
 import com.studentmanagement.StudentRecordAPI.exception.StudentNotFoundException;
 import com.studentmanagement.StudentRecordAPI.repository.StudentRepository;
 
-
 @Service
 public class StudentService {
-    
-    private StudentRepository studentRepository;
 
-    public StudentService(StudentRepository studentRepository){
-        this.studentRepository=studentRepository;
-    }
-    
-    public Student createStudent(Student studentReq){
-      studentReq.setCreatedAt(LocalDateTime.now());
-      studentReq.setUpdatedAt(LocalDateTime.now());
+    private final StudentRepository studentRepository;
 
-      Student studentResp=studentRepository.save(studentReq);
-      return studentResp;
+    public StudentService(StudentRepository studentRepository) {
+        this.studentRepository = studentRepository;
     }
 
-    public Student getStudent(Long id){
-       Optional <Student> studentResp= studentRepository.findById(id);
+    // CREATE
+    public StudentResponse createStudent(StudentRequest request) {
 
-       if(studentResp.isPresent()){
-        return studentResp.get();
-       }
-
-       return null;
-    }
-
-    public List<Student> getAllStudent(){
-       List<Student> studentResp= studentRepository.findAll();
-       return studentResp;
-    }
-
-    public Student updateStudent(Long id,Student studentReq){
-       Optional <Student> studentResp= studentRepository.findById(id);
-
-       if (studentResp.isEmpty()) {
-        throw new StudentNotFoundException("Student not found"+ id);
-      }
+        if (studentRepository.existsByEmail(request.getEmail())) {
+            throw new EmailAlreadyExistsException(
+                    "Email already exists"
+            );
+        }
       
-      if (studentRepository.existsByEmailAndIdNot(studentReq.getEmail(), id)) {
-        throw new EmailAlreadyExistsException("Email already exists");
-      }
+        request.setCreatedAt(LocalDateTime.now());
+        request.setUpdatedAt(LocalDateTime.now());
+        Student student = new Student();
 
+        student.setFirstName(request.getFirstName());
+        student.setLastName(request.getLastName());
+        student.setEmail(request.getEmail());
+        student.setPhone(request.getPhone());
+        student.setDateOfBirth(request.getDateOfBirth());
+        student.setAge(request.getAge());
+        student.setAddress(request.getAddress());
 
-       Student studentToSave=studentResp.get();
-       studentToSave.setFirstName(studentReq.getFirstName());
-       studentToSave.setLastName(studentReq.getLastName());
-       studentToSave.setAge(studentReq.getAge());
-       studentToSave.setEmail(studentReq.getEmail());
-       studentToSave.setAddress(studentReq.getAddress());
+        Student savedStudent = studentRepository.save(student);
 
-       return studentRepository.save(studentToSave);
+        return convertToResponse(savedStudent);
     }
 
-    public Boolean deleteStudent(Long id){
-       Boolean studentResp= studentRepository.existsById(id);
-       if(!studentResp) 
-       return false;
 
-       studentRepository.deleteById(id);
-        return true;
+    
+    public List<StudentResponse> getAllStudents() {
+
+        List<Student> students = studentRepository.findAll();
+
+        List<StudentResponse> responses = new ArrayList<>();
+
+        for (Student student : students) {
+            responses.add(convertToResponse(student));
+        }
+
+        return responses;
+    }
+
+
+   
+    public StudentResponse getStudentById(Long id) {
+
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() ->
+                        new StudentNotFoundException(
+                                "Student not found with id: " + id
+                        )
+                );
+
+        return convertToResponse(student);
+    }
+
+
+   
+    public StudentResponse updateStudent(
+            Long id,
+            StudentRequest request) {
+
+        Student studentToSave = studentRepository.findById(id)
+                .orElseThrow(() ->
+                        new StudentNotFoundException(
+                                "Student not found with id: " + id
+                        )
+                );
+
+        if (studentRepository.existsByEmailAndIdNot(
+                request.getEmail(), id)) {
+
+            throw new EmailAlreadyExistsException(
+                    "Email already exists"
+            );
+        }
+        request.setUpdatedAt(LocalDateTime.now());
+        studentToSave.setFirstName(request.getFirstName());
+        studentToSave.setLastName(request.getLastName());
+        studentToSave.setEmail(request.getEmail());
+        studentToSave.setPhone(request.getPhone());
+        studentToSave.setDateOfBirth(request.getDateOfBirth());
+        studentToSave.setAge(request.getAge());
+        studentToSave.setAddress(request.getAddress());
+
+        Student updatedStudent =
+                studentRepository.save(studentToSave);
+
+        return convertToResponse(updatedStudent);
+    }
+
+
+    
+    public void deleteStudent(Long id) {
+
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() ->
+                        new StudentNotFoundException(
+                                "Student not found with id: " + id
+                        )
+                );
+
+        studentRepository.delete(student);
+    }
+
+
+    // ENTITY → RESPONSE DTO
+    private StudentResponse convertToResponse(Student student) {
+
+        StudentResponse response = new StudentResponse();
+
+        response.setId(student.getId());
+        response.setFirstName(student.getFirstName());
+        response.setLastName(student.getLastName());
+        response.setEmail(student.getEmail());
+        response.setPhone(student.getPhone());
+        response.setDateOfBirth(student.getDateOfBirth());
+        response.setAge(student.getAge());
+        response.setAddress(student.getAddress());
+        response.setCreatedAt(student.getCreatedAt());
+        response.setUpdatedAt(student.getUpdatedAt());
+
+        return response;
     }
 }
