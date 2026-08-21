@@ -10,8 +10,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 public class StudentRequest {
-
-    private Long id;
     
     @NotBlank(message = "First name is required")
     private String firstName;
@@ -43,11 +41,6 @@ public class StudentRequest {
     
     public StudentRequest() {
     }
-
-    public Long getId(){
-        return id;
-    }
-
 
     public String getFirstName() {
         return firstName;

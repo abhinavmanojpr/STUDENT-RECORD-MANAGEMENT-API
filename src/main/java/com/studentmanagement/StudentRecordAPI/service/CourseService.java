@@ -1,10 +1,12 @@
 package com.studentmanagement.StudentRecordAPI.service;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.studentmanagement.StudentRecordAPI.dto.request.CourseRequest;
+import com.studentmanagement.StudentRecordAPI.dto.response.CourseResponse;
 import com.studentmanagement.StudentRecordAPI.entity.Course;
 import com.studentmanagement.StudentRecordAPI.exception.CourseNotFoundException;
 import com.studentmanagement.StudentRecordAPI.repository.CourseRepository;
@@ -12,52 +14,101 @@ import com.studentmanagement.StudentRecordAPI.repository.CourseRepository;
 @Service
 public class CourseService {
 
-     private  CourseRepository courseRepository;
+    private final CourseRepository courseRepository;
 
     public CourseService(CourseRepository courseRepository) {
         this.courseRepository = courseRepository;
     }
 
-    public Course createCourse(Course course){
-        return courseRepository.save(course);
+    // CREATE
+    public CourseResponse createCourse(CourseRequest request) {
+
+        Course course = new Course();
+
+        course.setCourseCode(request.getCourseCode());
+        course.setCourseName(request.getCourseName());
+        course.setCourseDescription(request.getCourseDescription());
+        course.setCredits(request.getCredits());
+
+        Course savedCourse = courseRepository.save(course);
+
+        return convertToResponse(savedCourse);
     }
 
-    public Course getCourse(Long id){
-       Optional <Course> courseResp= courseRepository.findById(id);
+    // GET ALL
+    public List<CourseResponse> getAllCourses() {
 
-       if(courseResp.isPresent()){
-        return courseResp.get();
-       }
+        List<Course> courses = courseRepository.findAll();
 
-       return null;
-    }
+        List<CourseResponse> responses = new ArrayList<>();
 
-    public List<Course> getAllCourses() {
-        return courseRepository.findAll();
-    }
-
-    public Course updateCourse(Long id, Course courseReq ){
-        Optional <Course> courseResp=courseRepository.findById(id);
-        if(courseResp.isEmpty()){
-            throw new CourseNotFoundException("Course not found");
+        for (Course course : courses) {
+            responses.add(convertToResponse(course));
         }
 
-        Course courseToSave=courseResp.get();
-        courseToSave.setCourseCode(courseReq.getCourseCode());
-        courseToSave.setCourseName(courseReq.getCourseName());
-        courseToSave.setCourseDescription(courseReq.getCourseDescription());
-        courseToSave.setCredits(courseReq.getCredits());
-
-        return courseRepository.save(courseToSave);
+        return responses;
     }
 
+    // GET BY ID
+    public CourseResponse getCourseById(Long id) {
 
+        Course course = courseRepository.findById(id)
+                .orElseThrow(() ->
+                        new CourseNotFoundException(
+                                "Course not found with id: " + id
+                        )
+                );
+
+        return convertToResponse(course);
+    }
+
+    // UPDATE
+    public CourseResponse updateCourse(
+            Long id,
+            CourseRequest request) {
+
+        Course courseToSave = courseRepository.findById(id)
+                .orElseThrow(() ->
+                        new CourseNotFoundException(
+                                "Course not found with id: " + id
+                        )
+                );
+
+        courseToSave.setCourseCode(request.getCourseCode());
+        courseToSave.setCourseName(request.getCourseName());
+        courseToSave.setCourseDescription(request.getCourseDescription());
+        courseToSave.setCredits(request.getCredits());
+
+        Course updatedCourse =
+                courseRepository.save(courseToSave);
+
+        return convertToResponse(updatedCourse);
+    }
+
+    // DELETE
     public void deleteCourse(Long id) {
 
-        getCourse(id);
+        Course course = courseRepository.findById(id)
+                .orElseThrow(() ->
+                        new CourseNotFoundException(
+                                "Course not found with id: " + id
+                        )
+                );
 
-        courseRepository.deleteById(id);
+        courseRepository.delete(course);
+    }
+
+    // ENTITY → RESPONSE DTO
+    private CourseResponse convertToResponse(Course course) {
+
+        CourseResponse response = new CourseResponse();
+
+        response.setId(course.getId());
+        response.setCourseCode(course.getCourseCode());
+        response.setCourseName(course.getCourseName());
+        response.setCourseDescription(course.getCourseDescription());
+        response.setCredits(course.getCredits());
+
+        return response;
     }
 }
-
-

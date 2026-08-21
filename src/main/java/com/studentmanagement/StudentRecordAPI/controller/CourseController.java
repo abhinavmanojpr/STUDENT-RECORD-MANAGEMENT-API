@@ -1,67 +1,80 @@
 package com.studentmanagement.StudentRecordAPI.controller;
 
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
-import com.studentmanagement.StudentRecordAPI.entity.Course;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import com.studentmanagement.StudentRecordAPI.dto.request.CourseRequest;
+import com.studentmanagement.StudentRecordAPI.dto.response.CourseResponse;
 import com.studentmanagement.StudentRecordAPI.service.CourseService;
-import org.springframework.web.bind.annotation.PutMapping;
 
-
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/courses")
 public class CourseController {
-    private CourseService courseService;
 
-    public CourseController(CourseService courseService){
-        this.courseService=courseService;
+    private final CourseService courseService;
+
+    public CourseController(CourseService courseService) {
+        this.courseService = courseService;
     }
 
+    // CREATE
     @PostMapping("/create")
-    public Course createCourse(@RequestBody Course course) {
-        return courseService.createCourse(course);
+    public ResponseEntity<CourseResponse> createCourse(
+            @Valid @RequestBody CourseRequest request) {
+
+        CourseResponse response =
+                courseService.createCourse(request);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
     }
 
+    // GET ALL
     @GetMapping("/getall")
-    public ResponseEntity <List<Course>> getAllCourses() {
-        List <Course> courseList=courseService.getAllCourses();
-        if(courseList.isEmpty()){
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(courseList);
+    public ResponseEntity<List<CourseResponse>> getAllCourses() {
+
+        List<CourseResponse> courses =
+                courseService.getAllCourses();
+
+        return ResponseEntity.ok(courses);
     }
 
-    @GetMapping("/get")
-    public ResponseEntity <Course> getCourse(@RequestParam Long id) {
-        Course courseResp= courseService.getCourse(id);
-        if(courseResp==null){
-            return ResponseEntity.notFound().build();
-        }
-        return  ResponseEntity.ok(courseResp);
+    // GET BY ID
+    @GetMapping("/{id}")
+    public ResponseEntity<CourseResponse> getCourseById(
+            @PathVariable Long id) {
+
+        CourseResponse course =
+                courseService.getCourseById(id);
+
+        return ResponseEntity.ok(course);
     }
 
+    // UPDATE
     @PutMapping("/{id}")
-    public ResponseEntity<Course> updateCourse(@PathVariable Long id, @RequestBody Course courseReq) {
-        Course courseResp=courseService.updateCourse(id, courseReq);
-        if(courseResp==null){
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(courseResp);
+    public ResponseEntity<CourseResponse> updateCourse(
+            @PathVariable Long id,
+            @Valid @RequestBody CourseRequest request) {
+
+        CourseResponse response =
+                courseService.updateCourse(id, request);
+
+        return ResponseEntity.ok(response);
     }
 
+    // DELETE
     @DeleteMapping("/{id}")
-    public String deleteCourse(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteCourse(
+            @PathVariable Long id) {
+
         courseService.deleteCourse(id);
-        return "Record Deleted";
+
+        return ResponseEntity.noContent().build();
     }
-
-
 }
