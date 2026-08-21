@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.studentmanagement.StudentRecordAPI.dto.response.StudentResponse;
 import com.studentmanagement.StudentRecordAPI.dto.request.StudentRequest;
 import com.studentmanagement.StudentRecordAPI.service.StudentService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +37,16 @@ public class StudentController{
         StudentResponse createdStudent=studentService.createStudent(s);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdStudent);
 
+    }
+
+    @GetMapping("/page")
+    public ResponseEntity<Page<StudentResponse>> getStudents(
+        Pageable pageable) {
+
+        Page<StudentResponse> students =
+            studentService.getStudents(pageable);
+
+        return ResponseEntity.ok(students);
     }
 
     @GetMapping("/get")
@@ -77,5 +89,7 @@ public class StudentController{
 
         return ResponseEntity.ok("Student deleted successfully");
     }
+
+    
     
 }

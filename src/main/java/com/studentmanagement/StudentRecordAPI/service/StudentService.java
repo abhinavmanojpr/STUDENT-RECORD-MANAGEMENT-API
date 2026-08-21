@@ -12,6 +12,8 @@ import com.studentmanagement.StudentRecordAPI.entity.Student;
 import com.studentmanagement.StudentRecordAPI.exception.EmailAlreadyExistsException;
 import com.studentmanagement.StudentRecordAPI.exception.StudentNotFoundException;
 import com.studentmanagement.StudentRecordAPI.repository.StudentRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class StudentService {
@@ -112,7 +114,12 @@ public class StudentService {
         return convertToResponse(updatedStudent);
     }
 
+        public Page<StudentResponse> getStudents(Pageable pageable) {
 
+        Page<Student> students = studentRepository.findAll(pageable);
+
+                return students.map(this::convertToResponse);
+        }
     
     public void deleteStudent(Long id) {
 
