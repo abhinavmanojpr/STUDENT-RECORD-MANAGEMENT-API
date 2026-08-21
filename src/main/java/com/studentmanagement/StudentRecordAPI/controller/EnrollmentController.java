@@ -2,10 +2,15 @@ package com.studentmanagement.StudentRecordAPI.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.studentmanagement.StudentRecordAPI.entity.Enrollment;
+import com.studentmanagement.StudentRecordAPI.dto.request.EnrollmentRequest;
+import com.studentmanagement.StudentRecordAPI.dto.response.EnrollmentResponse;
 import com.studentmanagement.StudentRecordAPI.service.EnrollmentService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/enrollments")
@@ -13,45 +18,65 @@ public class EnrollmentController {
 
     private final EnrollmentService enrollmentService;
 
-    public EnrollmentController(EnrollmentService enrollmentService) {
+    public EnrollmentController(
+            EnrollmentService enrollmentService) {
+
         this.enrollmentService = enrollmentService;
     }
 
+    
     @PostMapping("/create")
-    public Enrollment createEnrollment(
-            @RequestParam Long studentId,
-            @RequestParam Long courseId) {
+    public ResponseEntity<EnrollmentResponse> createEnrollment(
+            @Valid @RequestBody EnrollmentRequest request) {
 
-        return enrollmentService.createEnrollment(studentId, courseId);
+        EnrollmentResponse response =
+                enrollmentService.createEnrollment(request);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
     }
+
 
     @GetMapping("/getall")
-    public List<Enrollment> getAllEnrollments() {
-        return enrollmentService.getAllEnrollments();
-    }
+    public ResponseEntity<List<EnrollmentResponse>>
+            getAllEnrollments() {
 
-    @GetMapping("/{id}")
-    public Enrollment getEnrollmentById(@PathVariable Long id) {
-        return enrollmentService.getEnrollmentById(id);
-    }
-
-    @PutMapping("/{id}")
-public Enrollment updateEnrollment(
-        @PathVariable Long id,
-        @RequestParam Long studentId,
-        @RequestParam Long courseId,
-        @RequestParam String status) {
-
-        return enrollmentService.updateEnrollment(
-            id,
-            studentId,
-            courseId,
-            status
+        return ResponseEntity.ok(
+                enrollmentService.getAllEnrollments()
         );
     }
 
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<EnrollmentResponse>
+            getEnrollmentById(@PathVariable Long id) {
+
+        return ResponseEntity.ok(
+                enrollmentService.getEnrollmentById(id)
+        );
+    }
+
+
+    @PutMapping("/{id}")
+    public ResponseEntity<EnrollmentResponse>
+            updateEnrollment(
+                    @PathVariable Long id,
+                    @Valid @RequestBody EnrollmentRequest request) {
+
+        EnrollmentResponse response =
+                enrollmentService.updateEnrollment(id, request);
+
+        return ResponseEntity.ok(response);
+    }
+
+ 
     @DeleteMapping("/{id}")
-    public void deleteEnrollment(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteEnrollment(
+            @PathVariable Long id) {
+
         enrollmentService.deleteEnrollment(id);
+
+        return ResponseEntity.noContent().build();
     }
 }

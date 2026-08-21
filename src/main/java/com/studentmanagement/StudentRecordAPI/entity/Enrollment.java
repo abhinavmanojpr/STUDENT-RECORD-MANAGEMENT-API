@@ -5,7 +5,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.ManyToOne;  
+import jakarta.persistence. UniqueConstraint;
 import java.time.LocalDate;
 
 
@@ -14,20 +15,30 @@ import jakarta.persistence.Table;
 
 
 @Entity
-@Table(name="enrollment")
+@Table(
+    name = "enrollment",
+    uniqueConstraints = {
+        @UniqueConstraint(
+            columnNames = {"student_id", "course_id"}
+        )
+    }
+)
 public class Enrollment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false)
     private String status;
+
     @ManyToOne
-    @JoinColumn(name = "Student_id",nullable=false,unique=true)
-    private Student studentId;
+    @JoinColumn(name = "student_id",nullable=false)
+    private Student student;
+
     @ManyToOne
-    @JoinColumn(name = "Course_id",nullable=false,unique=true)
-    private Course courseId;
+    @JoinColumn(name = "course_id",nullable=false)
+    private Course course;
     
     @Column(nullable = false)
     private LocalDate enrollmentDate;
@@ -42,19 +53,19 @@ public class Enrollment {
     }
 
     public Student getStudent() {
-        return studentId;
+        return student;
     }
 
     public void setStudent(Student student) {
-        this.studentId = student;
+        this.student = student;
     }
 
     public Course getCourse() {
-        return courseId;
+        return course;
     }
 
     public void setCourse(Course course) {
-        this.courseId = course;
+        this.course = course;
     }
 
     public LocalDate getEnrollmentDate() {

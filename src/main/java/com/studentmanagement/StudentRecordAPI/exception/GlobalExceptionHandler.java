@@ -99,4 +99,22 @@ public class GlobalExceptionHandler {
                 HttpStatus.CONFLICT
             );
         }
+
+    @ExceptionHandler(DuplicateEnrollmentException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateEnrollment(
+            DuplicateEnrollmentException exception) {
+
+            ErrorResponse response = new ErrorResponse(
+                 409,
+                exception.getMessage(),
+                null
+            );
+
+            return new ResponseEntity<>(
+                response,
+                HttpStatus.CONFLICT
+            );
+        }
+
+        
 }
