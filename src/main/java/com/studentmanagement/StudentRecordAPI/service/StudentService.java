@@ -52,18 +52,14 @@ public class StudentService {
 
 
     
-    public List<StudentResponse> getAllStudents() {
+    public Page<StudentResponse> getAllStudents(
+        Pageable pageable) {
 
-        List<Student> students = studentRepository.findAll();
+    Page<Student> students =
+            studentRepository.findAll(pageable);
 
-        List<StudentResponse> responses = new ArrayList<>();
-
-        for (Student student : students) {
-            responses.add(convertToResponse(student));
-        }
-
-        return responses;
-    }
+    return students.map(this::convertToResponse);
+}
 
 
    
