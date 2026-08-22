@@ -49,6 +49,34 @@ public class StudentController{
         return ResponseEntity.ok(students);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<Page<StudentResponse>> searchStudents(
+        @RequestParam String name,
+        Pageable pageable) {
+
+        Page<StudentResponse> students =studentService.searchStudents(name, pageable);
+
+        return ResponseEntity.ok(students);
+    }
+
+   @GetMapping("/filter")
+    public ResponseEntity<?>filterStudents(
+        @RequestParam(required = false) Integer age,
+        @RequestParam(required = false) String email,
+        @RequestParam(required = false) Integer minAge,
+        @RequestParam(required = false) Integer maxAge) {
+
+        List<StudentResponse> students =
+            studentService.filterStudents(age, email, minAge, maxAge);
+
+             if (students.isEmpty()){
+         return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body("No students found");
+    }
+        return ResponseEntity.ok(students);
+    }
+
     @GetMapping("/get")
     public ResponseEntity <StudentResponse> getStudent(@RequestParam Long id) {
         StudentResponse studentResp =studentService.getStudentById(id);

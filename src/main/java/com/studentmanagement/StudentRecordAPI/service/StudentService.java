@@ -133,6 +133,59 @@ public class StudentService {
         studentRepository.delete(student);
     }
 
+        public Page<StudentResponse> searchStudents(
+                String name,Pageable pageable) {
+
+         Page<Student> students =
+                studentRepository.searchByName(name, pageable);
+
+                return students.map(this::convertToResponse);
+        }
+
+       public List<StudentResponse> filterStudents(Integer age,String email,
+                Integer minAge,
+                Integer maxAge) {
+
+                if (age != null) {
+                        return studentRepository.findByAge(age)
+                                .stream()
+                                .map(this::convertToResponse)
+                                .toList();
+                        }
+
+                if (email != null) {
+                        return studentRepository.findByEmail(email)
+                                .stream()
+                                .map(this::convertToResponse)
+                                .toList();
+                        }
+
+
+                 if (minAge != null && maxAge == null) {
+                        return studentRepository.findByAgeGreaterThan(minAge)
+                                .stream()
+                                .map(this::convertToResponse)
+                                .toList();
+                        }
+
+
+                if (maxAge != null && minAge == null) {
+                        return studentRepository.findByAgeLessThan(maxAge)
+                                .stream()
+                                .map(this::convertToResponse)
+                                .toList();
+                        }
+
+    
+                if (minAge != null && maxAge != null) {
+                        return studentRepository.findByAgeBetween(minAge, maxAge)
+                                .stream()
+                                .map(this::convertToResponse)
+                                .toList();
+                        }
+
+            return List.of();
+        }
 
     // ENTITY → RESPONSE DTO
     private StudentResponse convertToResponse(Student student) {
